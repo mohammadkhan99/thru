@@ -162,6 +162,16 @@ You can deploy this to:
 - **Railway**: Connect repo and add environment variables
 - **Any Node.js hosting**: Ensure environment variables are set
 
+## Custom Domain Setup
+
+Want to use your own domain (e.g., `comethru.co`)? 
+
+See **[DOMAIN_SETUP.md](./DOMAIN_SETUP.md)** for a complete guide on:
+- Adding your domain to Vercel
+- Configuring DNS records
+- Setting up SSL (automatic!)
+- Updating email configuration for production
+
 ## Project Structure
 
 ```
