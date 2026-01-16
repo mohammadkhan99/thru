@@ -58,10 +58,30 @@ Set these in your Vercel project settings:
 2. Verify your email
 3. Go to API Keys and create a new API key
 4. Copy the API key and add it as `RESEND_API_KEY` in Vercel
-5. (Optional) Add your domain in Resend to send from your own email address
-6. That's it! Much easier than Gmail app passwords.
 
-**Note:** For production, you'll want to add your domain in Resend and set `FROM_EMAIL` to something like `noreply@yourdomain.com`
+**IMPORTANT - Domain Restrictions:**
+- The test domain `onboarding@resend.dev` can **only send to the email address associated with your Resend account**
+- If you want to send to other emails (like `mohammad@k2studio.co`), you have two options:
+
+  **Option 1: Use your Resend account email (Quick Test)**
+  - Set `RECIPIENT_EMAIL` to the email you used to sign up for Resend
+  - Set `RESEND_ACCOUNT_EMAIL` to the same email (optional, for clarity)
+  
+  **Option 2: Verify a domain (For Production)**
+  - Go to Resend → Domains → Add Domain
+  - Add your domain (e.g., `comethru.co`)
+  - Verify it by adding DNS records
+  - Set `FROM_EMAIL` to something like `noreply@comethru.co`
+  - Now you can send to any email address!
+
+**For Testing:**
+- Use `RESEND_ACCOUNT_EMAIL` = the email you signed up with for Resend
+- Use `RECIPIENT_EMAIL` = same email (or any email if you verified a domain)
+
+**For Production:**
+- Verify your domain in Resend
+- Set `FROM_EMAIL` = `noreply@comethru.co` (or your verified domain)
+- Set `RECIPIENT_EMAIL` = `joey@comethru.co`
 
 ## Weekly Newsletter Setup
 

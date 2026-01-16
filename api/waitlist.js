@@ -35,13 +35,22 @@ module.exports = async (req, res) => {
         // Send email using Resend (if configured)
         // Currently set to test email, change to 'joey@comethru.co' for production
         const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
-        const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev'; // Default Resend domain for testing
+        // For testing: Use the Resend account email or verify a domain
+        // The onboarding@resend.dev domain can only send to the Resend account owner's email
+        const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+        
+        // If using test domain, we need to send to the Resend account email
+        // Get it from environment or use recipientEmail if it's the account owner
+        const resendAccountEmail = process.env.RESEND_ACCOUNT_EMAIL;
+        const actualRecipient = (fromEmail.includes('resend.dev') && resendAccountEmail) 
+            ? resendAccountEmail 
+            : recipientEmail;
         
         if (resend) {
             try {
                 const { data, error } = await resend.emails.send({
                     from: `Thru Landing <${fromEmail}>`,
-                    to: recipientEmail,
+                    to: actualRecipient,
                     subject: `New Thru Waitlist Signup: ${email}`,
                     html: `
                         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
@@ -63,8 +72,13 @@ module.exports = async (req, res) => {
                     });
                 }
                 
-                console.log(`✅ Email sent successfully to ${recipientEmail} for signup: ${email}`);
+                console.log(`✅ Email sent successfully to ${actualRecipient} for signup: ${email}`);
                 console.log(`Resend response:`, data);
+                
+                // If we had to use account email, note it in the response
+                if (actualRecipient !== recipientEmail) {
+                    console.log(`⚠️ Note: Sent to Resend account email (${actualRecipient}) instead of ${recipientEmail} because test domain restrictions. Verify a domain in Resend to send to any email.`);
+                }
             } catch (err) {
                 console.error('Exception sending email:', err);
                 return res.status(500).json({ 
