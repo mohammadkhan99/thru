@@ -63,6 +63,47 @@ Set these in your Vercel project settings:
 
 **Note:** For production, you'll want to add your domain in Resend and set `FROM_EMAIL` to something like `noreply@yourdomain.com`
 
+## Weekly Newsletter Setup
+
+The project includes a weekly newsletter system that automatically sends updates to your waitlist subscribers.
+
+### Newsletter Environment Variables
+
+Add these to Vercel:
+
+1. **NEWSLETTER_EMAILS** - Comma-separated list of subscriber emails (e.g., `email1@example.com,email2@example.com`)
+   - For now, manually add emails here
+   - **Better option:** Use a database (see below)
+2. **NEWSLETTER_SUBJECT** - Subject line for newsletter (optional, defaults to "Weekly Update from Thru")
+3. **NEWSLETTER_CONTENT** - HTML content for the newsletter (optional, customize in code)
+4. **NEWSLETTER_SECRET** - Secret key to protect the endpoint (optional but recommended)
+
+### How It Works
+
+- **Automatic:** Newsletter sends every Monday at 10 AM via Vercel Cron Jobs
+- **Manual:** Visit `https://your-site.vercel.app/api/newsletter?secret=YOUR_SECRET` to trigger manually
+- **Email List:** Currently uses `NEWSLETTER_EMAILS` env variable (simple approach)
+
+### Better Email Storage (Recommended)
+
+For a production setup, you should store emails in a database:
+
+1. **Supabase** (Free tier available):
+   - Create a `subscribers` table with `email` and `created_at` columns
+   - Update `api/waitlist.js` to save emails to Supabase
+   - Update `api/newsletter.js` to fetch emails from Supabase
+
+2. **Airtable** (Free tier available):
+   - Create a base with subscriber emails
+   - Use Airtable API to store/fetch emails
+
+3. **Resend Audience** (if available):
+   - Use Resend's built-in audience management
+
+### Customizing Newsletter Content
+
+Edit `api/newsletter.js` to customize the newsletter template. You can also set `NEWSLETTER_CONTENT` as an environment variable for dynamic content.
+
 ## Deployment
 
 You can deploy this to:

@@ -3,6 +3,16 @@
     {
       "source": "/api/waitlist",
       "destination": "/api/waitlist.js"
+    },
+    {
+      "source": "/api/newsletter",
+      "destination": "/api/newsletter.js"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/newsletter",
+      "schedule": "0 10 * * 1"
     }
   ]
 }

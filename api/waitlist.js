@@ -64,6 +64,10 @@ module.exports = async (req, res) => {
             console.log(`(Email not configured - would send to ${recipientEmail})`);
         }
 
+        // Store email for newsletter (optional - can be done via database)
+        // For now, we'll just log it. You can add database storage here.
+        console.log(`Subscriber added to newsletter list: ${email}`);
+
         res.json({ 
             success: true, 
             message: 'Successfully added to waitlist' 
