@@ -1,19 +1,9 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// Email configuration (only if credentials are provided)
-let transporter = null;
-if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-    try {
-        transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-    } catch (error) {
-        console.log('Email not configured, will log signups to console');
-    }
+// Initialize Resend (only if API key is provided)
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
 }
 
 module.exports = async (req, res) => {
@@ -42,16 +32,16 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Valid email is required' });
         }
 
-        // Send email (if transporter is configured)
+        // Send email using Resend (if configured)
         // Currently set to test email, change to 'joey@comethru.co' for production
         const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
+        const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev'; // Default Resend domain for testing
         
-        if (transporter) {
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
+        if (resend) {
+            const { data, error } = await resend.emails.send({
+                from: `Thru Landing <${fromEmail}>`,
                 to: recipientEmail,
                 subject: `New Thru Waitlist Signup: ${email}`,
-                text: `A new user has joined the Thru waitlist:\n\nEmail: ${email}\n\nTimestamp: ${new Date().toISOString()}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
                         <h2 style="color: #BF4E30; border-bottom: 2px solid #BF4E30; padding-bottom: 10px;">New Thru Waitlist Signup</h2>
@@ -60,9 +50,13 @@ module.exports = async (req, res) => {
                         <p style="margin-top: 30px; font-size: 12px; color: #999;">This email was sent from the Thru landing page waitlist form.</p>
                     </div>
                 `,
-            };
+            });
 
-            await transporter.sendMail(mailOptions);
+            if (error) {
+                console.error('Resend error:', error);
+                throw error;
+            }
+            
             console.log(`Email sent to ${recipientEmail} for signup: ${email}`);
         } else {
             // Log to console if email is not configured

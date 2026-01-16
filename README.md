@@ -46,19 +46,22 @@ The waitlist form sends emails when users sign up. Currently configured to send 
 
 Set these in your Vercel project settings:
 
-1. **EMAIL_USER** - Your Gmail address (e.g., `your-email@gmail.com`)
-2. **EMAIL_PASS** - Your Gmail App Password (see Gmail Setup below)
+1. **RESEND_API_KEY** - Your Resend API key (get it from [resend.com](https://resend.com))
+2. **FROM_EMAIL** - Email address to send from (optional, defaults to Resend's test domain)
 3. **RECIPIENT_EMAIL** - Email to receive waitlist signups (defaults to `mohammad@k2studio.co` if not set)
    - For testing: `mohammad@k2studio.co`
    - For production: `joey@comethru.co`
 
-### Gmail Setup
-1. Enable 2-Step Verification on your Google Account
-2. Generate an App Password: Google Account → Security → 2-Step Verification → App passwords
-3. Use your Gmail address and the generated app password in Vercel environment variables
+### Resend Setup (Easy - No App Passwords!)
 
-### Alternative Email Services
-You can modify the transporter configuration in `api/waitlist.js` to use other email services (SendGrid, Mailgun, etc.).
+1. Go to [resend.com](https://resend.com) and sign up (free tier: 3,000 emails/month)
+2. Verify your email
+3. Go to API Keys and create a new API key
+4. Copy the API key and add it as `RESEND_API_KEY` in Vercel
+5. (Optional) Add your domain in Resend to send from your own email address
+6. That's it! Much easier than Gmail app passwords.
+
+**Note:** For production, you'll want to add your domain in Resend and set `FROM_EMAIL` to something like `noreply@yourdomain.com`
 
 ## Deployment
 
