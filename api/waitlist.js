@@ -54,14 +54,21 @@ module.exports = async (req, res) => {
 
             if (error) {
                 console.error('Resend error:', error);
-                throw error;
+                return res.status(500).json({ 
+                    error: 'Failed to send email',
+                    details: error.message 
+                });
             }
             
-            console.log(`Email sent to ${recipientEmail} for signup: ${email}`);
+            console.log(`✅ Email sent successfully to ${recipientEmail} for signup: ${email}`);
         } else {
             // Log to console if email is not configured
-            console.log(`New waitlist signup: ${email} at ${new Date().toISOString()}`);
-            console.log(`(Email not configured - would send to ${recipientEmail})`);
+            console.log(`⚠️ New waitlist signup: ${email} at ${new Date().toISOString()}`);
+            console.log(`⚠️ RESEND_API_KEY not configured - email would be sent to ${recipientEmail}`);
+            return res.status(500).json({ 
+                error: 'Email service not configured',
+                message: 'RESEND_API_KEY environment variable is missing. Please configure it in Vercel.'
+            });
         }
 
         // Store email for newsletter (optional - can be done via database)
