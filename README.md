@@ -40,15 +40,25 @@ npm run dev
 
 ## Email Configuration
 
-The waitlist form sends emails to `joey@comethru.co` when users sign up.
+The waitlist form sends emails when users sign up. Currently configured to send to `mohammad@k2studio.co` for testing. Change to `joey@comethru.co` for production.
+
+### Vercel Environment Variables
+
+Set these in your Vercel project settings:
+
+1. **EMAIL_USER** - Your Gmail address (e.g., `your-email@gmail.com`)
+2. **EMAIL_PASS** - Your Gmail App Password (see Gmail Setup below)
+3. **RECIPIENT_EMAIL** - Email to receive waitlist signups (defaults to `mohammad@k2studio.co` if not set)
+   - For testing: `mohammad@k2studio.co`
+   - For production: `joey@comethru.co`
 
 ### Gmail Setup
 1. Enable 2-Step Verification on your Google Account
-2. Generate an App Password: Google Account → Security → App passwords
-3. Use your Gmail address and the generated app password in `.env`
+2. Generate an App Password: Google Account → Security → 2-Step Verification → App passwords
+3. Use your Gmail address and the generated app password in Vercel environment variables
 
 ### Alternative Email Services
-You can modify the transporter configuration in `server.js` to use other email services (SendGrid, Mailgun, etc.).
+You can modify the transporter configuration in `api/waitlist.js` to use other email services (SendGrid, Mailgun, etc.).
 
 ## Deployment
 

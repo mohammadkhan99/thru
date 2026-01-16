@@ -42,26 +42,32 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Valid email is required' });
         }
 
-        // Send email to joey@comethru.co (if transporter is configured)
+        // Send email (if transporter is configured)
+        // Currently set to test email, change to 'joey@comethru.co' for production
+        const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
+        
         if (transporter) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
-                to: 'joey@comethru.co',
-                subject: `New Waitlist Signup: ${email}`,
-                text: `A new user has joined the waitlist:\n\nEmail: ${email}\n\nTimestamp: ${new Date().toISOString()}`,
+                to: recipientEmail,
+                subject: `New Thru Waitlist Signup: ${email}`,
+                text: `A new user has joined the Thru waitlist:\n\nEmail: ${email}\n\nTimestamp: ${new Date().toISOString()}`,
                 html: `
-                    <div style="font-family: Arial, sans-serif; padding: 20px;">
-                        <h2 style="color: #BF4E30;">New Waitlist Signup</h2>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
+                        <h2 style="color: #BF4E30; border-bottom: 2px solid #BF4E30; padding-bottom: 10px;">New Thru Waitlist Signup</h2>
+                        <p style="font-size: 16px; margin: 20px 0;"><strong>Email:</strong> ${email}</p>
+                        <p style="font-size: 14px; color: #666;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                        <p style="margin-top: 30px; font-size: 12px; color: #999;">This email was sent from the Thru landing page waitlist form.</p>
                     </div>
                 `,
             };
 
             await transporter.sendMail(mailOptions);
+            console.log(`Email sent to ${recipientEmail} for signup: ${email}`);
         } else {
             // Log to console if email is not configured
             console.log(`New waitlist signup: ${email} at ${new Date().toISOString()}`);
+            console.log(`(Email not configured - would send to ${recipientEmail})`);
         }
 
         res.json({ 
