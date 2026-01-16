@@ -38,29 +38,41 @@ module.exports = async (req, res) => {
         const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev'; // Default Resend domain for testing
         
         if (resend) {
-            const { data, error } = await resend.emails.send({
-                from: `Thru Landing <${fromEmail}>`,
-                to: recipientEmail,
-                subject: `New Thru Waitlist Signup: ${email}`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
-                        <h2 style="color: #BF4E30; border-bottom: 2px solid #BF4E30; padding-bottom: 10px;">New Thru Waitlist Signup</h2>
-                        <p style="font-size: 16px; margin: 20px 0;"><strong>Email:</strong> ${email}</p>
-                        <p style="font-size: 14px; color: #666;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
-                        <p style="margin-top: 30px; font-size: 12px; color: #999;">This email was sent from the Thru landing page waitlist form.</p>
-                    </div>
-                `,
-            });
+            try {
+                const { data, error } = await resend.emails.send({
+                    from: `Thru Landing <${fromEmail}>`,
+                    to: recipientEmail,
+                    subject: `New Thru Waitlist Signup: ${email}`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
+                            <h2 style="color: #BF4E30; border-bottom: 2px solid #BF4E30; padding-bottom: 10px;">New Thru Waitlist Signup</h2>
+                            <p style="font-size: 16px; margin: 20px 0;"><strong>Email:</strong> ${email}</p>
+                            <p style="font-size: 14px; color: #666;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                            <p style="margin-top: 30px; font-size: 12px; color: #999;">This email was sent from the Thru landing page waitlist form.</p>
+                        </div>
+                    `,
+                });
 
-            if (error) {
-                console.error('Resend error:', error);
+                if (error) {
+                    console.error('Resend error:', JSON.stringify(error, null, 2));
+                    return res.status(500).json({ 
+                        error: 'Failed to send email',
+                        details: error.message || JSON.stringify(error),
+                        recipient: recipientEmail,
+                        from: fromEmail
+                    });
+                }
+                
+                console.log(`✅ Email sent successfully to ${recipientEmail} for signup: ${email}`);
+                console.log(`Resend response:`, data);
+            } catch (err) {
+                console.error('Exception sending email:', err);
                 return res.status(500).json({ 
                     error: 'Failed to send email',
-                    details: error.message 
+                    details: err.message,
+                    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
                 });
             }
-            
-            console.log(`✅ Email sent successfully to ${recipientEmail} for signup: ${email}`);
         } else {
             // Log to console if email is not configured
             console.log(`⚠️ New waitlist signup: ${email} at ${new Date().toISOString()}`);

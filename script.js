@@ -89,7 +89,9 @@ form.addEventListener('submit', async (e) => {
             form.classList.remove('is-visible');
             requestBtn.style.display = 'flex';
         } else {
-            showMessage(data.error || 'Something went wrong. Please try again.', 'error');
+            const errorMsg = data.details || data.error || data.message || 'Something went wrong. Please try again.';
+            console.error('API Error:', data);
+            showMessage(errorMsg, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
