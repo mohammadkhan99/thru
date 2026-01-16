@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
     res.setHeader(
         'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Newsletter-Secret'
     );
 
     if (req.method === 'OPTIONS') {
@@ -30,19 +30,30 @@ module.exports = async (req, res) => {
         const emailList = process.env.NEWSLETTER_EMAILS || '';
         
         if (!emailList) {
-            return res.status(400).json({ error: 'No email list configured' });
+            return res.status(400).json({ error: 'No email list configured. Set NEWSLETTER_EMAILS in Vercel.' });
         }
 
         const emails = emailList.split(',').map(email => email.trim()).filter(Boolean);
         const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
         const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
 
-        // Newsletter content - customize this
-        const newsletterContent = process.env.NEWSLETTER_CONTENT || `
+        // Get newsletter content from POST request or use default
+        let newsletterSubject = process.env.NEWSLETTER_SUBJECT || 'Weekly Update from Thru';
+        let newsletterContent = process.env.NEWSLETTER_CONTENT || `
             <h2>Weekly Update from Thru</h2>
             <p>Here's what's been happening this week...</p>
             <p>Customize this content in your Vercel environment variables or update the code.</p>
         `;
+
+        // If POST request with custom content, use that instead
+        if (req.method === 'POST' && req.body) {
+            if (req.body.subject) {
+                newsletterSubject = req.body.subject;
+            }
+            if (req.body.content) {
+                newsletterContent = req.body.content;
+            }
+        }
 
         const results = [];
         const errors = [];
@@ -53,7 +64,7 @@ module.exports = async (req, res) => {
                 const { data, error } = await resend.emails.send({
                     from: `Thru <${fromEmail}>`,
                     to: email,
-                    subject: process.env.NEWSLETTER_SUBJECT || 'Weekly Update from Thru',
+                    subject: newsletterSubject,
                     html: `
                         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
                             <div style="background: #BF4E30; color: white; padding: 20px; text-align: center;">

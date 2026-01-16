@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thru Newsletter Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #EDEAE5;
+            color: #2C2C2C;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #BF4E30;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2C2C2C;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #D3D3D3;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #BF4E30;
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .preview-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #F5F5F5;
+            border-radius: 4px;
+            border: 1px solid #D3D3D3;
+        }
+
+        .preview-section h3 {
+            margin-bottom: 1rem;
+            color: #2C2C2C;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-preview {
+            background: #2D3142;
+            color: white;
+        }
+
+        .btn-preview:hover {
+            background: #1a1d2a;
+        }
+
+        .btn-send {
+            background: #BF4E30;
+            color: white;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            background: #a03d25;
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .template-examples {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .template-examples h4 {
+            margin-bottom: 0.5rem;
+            color: #2C2C2C;
+        }
+
+        .template-examples code {
+            background: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 2px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thru Newsletter Admin</h1>
+        <p class="subtitle">Create and send weekly updates to your waitlist subscribers</p>
+
+        <form id="newsletter-form">
+            <div class="form-group">
+                <label for="subject">Subject Line</label>
+                <input type="text" id="subject" name="subject" placeholder="Weekly Update from Thru" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Newsletter Content (HTML)</label>
+                <textarea id="content" name="content" placeholder="<h2>This Week at Thru</h2><p>Write your newsletter content here using HTML...</p>" required></textarea>
+                <p class="help-text">You can use HTML tags like &lt;h2&gt;, &lt;p&gt;, &lt;strong&gt;, &lt;a&gt;, etc.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="secret">Secret Key</label>
+                <input type="password" id="secret" name="secret" placeholder="Enter your newsletter secret key" required>
+                <p class="help-text">Set this in Vercel as NEWSLETTER_SECRET environment variable</p>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-preview" id="preview-btn">Preview</button>
+                <button type="submit" class="btn-send" id="send-btn">
+                    <span class="btn-text">Send Newsletter</span>
+                    <span class="btn-loader" style="display: none;">
+                        <span class="loading"></span> Sending...
+                    </span>
+                </button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </form>
+
+        <div class="preview-section" id="preview-section" style="display: none;">
+            <h3>Preview</h3>
+            <div class="preview-content" id="preview-content"></div>
+        </div>
+
+        <div class="template-examples">
+            <h4>Quick Template Examples:</h4>
+            <p><strong>Simple:</strong> <code>&lt;h2&gt;Weekly Update&lt;/h2&gt;&lt;p&gt;Content here...&lt;/p&gt;</code></p>
+            <p><strong>With Link:</strong> <code>&lt;p&gt;Check out our &lt;a href="#"&gt;latest update&lt;/a&gt;&lt;/p&gt;</code></p>
+            <p><strong>List:</strong> <code>&lt;ul&gt;&lt;li&gt;Item 1&lt;/li&gt;&lt;li&gt;Item 2&lt;/li&gt;&lt;/ul&gt;</code></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('newsletter-form');
+        const previewBtn = document.getElementById('preview-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const previewSection = document.getElementById('preview-section');
+        const previewContent = document.getElementById('preview-content');
+        const messageDiv = document.getElementById('message');
+        const btnText = sendBtn.querySelector('.btn-text');
+        const btnLoader = sendBtn.querySelector('.btn-loader');
+
+        // Get the current domain for API calls
+        const apiUrl = window.location.origin + '/api/newsletter';
+
+        previewBtn.addEventListener('click', () => {
+            const content = document.getElementById('content').value;
+            if (!content) {
+                showMessage('Please enter some content first', 'error');
+                return;
+            }
+
+            // Create preview with newsletter template
+            const previewHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                    <div style="background: #BF4E30; color: white; padding: 20px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 24px;">thru.</h1>
+                    </div>
+                    <div style="padding: 30px 20px; background: #EDEAE5;">
+                        ${content}
+                        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #D3D3D3; font-size: 12px; color: #666;">
+                            <p>You're receiving this because you signed up for the Thru waitlist.</p>
+                            <p><a href="#" style="color: #BF4E30;">Unsubscribe</a></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            previewContent.innerHTML = previewHTML;
+            previewSection.style.display = 'block';
+            showMessage('Preview updated', 'success');
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subject = document.getElementById('subject').value;
+            const content = document.getElementById('content').value;
+            const secret = document.getElementById('secret').value;
+
+            if (!subject || !content || !secret) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            setLoading(true);
+            hideMessage();
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Newsletter-Secret': secret,
+                    },
+                    body: JSON.stringify({
+                        subject,
+                        content,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Newsletter sent successfully! Sent to ${data.sent} subscribers.`, 'success');
+                    form.reset();
+                    previewSection.style.display = 'none';
+                } else {
+                    showMessage(data.error || 'Failed to send newsletter', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Unable to connect. Please check your connection and try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function setLoading(isLoading) {
+            sendBtn.disabled = isLoading;
+            if (isLoading) {
+                btnText.style.display = 'none';
+                btnLoader.style.display = 'inline-block';
+            } else {
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+            }
+        }
+
+        function showMessage(message, type) {
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function hideMessage() {
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'message';
+        }
+    </script>
+</body>
+</html>
