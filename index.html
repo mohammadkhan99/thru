@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thru — Investor Activation Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="container">
+        <header>
+            <div class="logo">thru.</div>
+            <a href="https://form.typeform.com/to/IkLxPIR8" target="_blank" class="survey-link">click for survey</a>
+        </header>
+
+        <main>
+            <section class="content">
+                <h1 class="heading fade-in">
+                    Stop managing your investors.<br>
+                    Start activating them.
+                </h1>
+                
+                <p class="subhead fade-in">
+                    You raised the capital. Now unlock the network.<br>
+                    <span class="thru-quoted">thru.</span> turns your passive cap table into an active growth engine.
+                </p>
+                
+                <p class="support-text fade-in-delay">
+                    What's the real value of your cap table? Let's find out. Come <span class="thru-highlight pulse">thru.</span>
+                </p>
+
+                <section class="waitlist-section fade-in-delay-2">
+                    <button type="button" class="submit-btn" id="request-btn">
+                        <span class="btn-text">Request Early Access</span>
+                    </button>
+                    <form id="waitlist-form" class="waitlist-form">
+                        <input 
+                            type="email" 
+                            id="email-input" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            required
+                            autocomplete="email"
+                        >
+                        <button type="submit" class="send-btn" id="submit-btn">
+                            <span class="btn-text">Send</span>
+                            <span class="btn-loader" style="display: none;">
+                                <span class="spinner"></span>
+                            </span>
+                        </button>
+                    </form>
+                    <div id="form-message" class="form-message"></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
