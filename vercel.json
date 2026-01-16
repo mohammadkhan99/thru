@@ -7,6 +7,10 @@
     {
       "source": "/api/newsletter",
       "destination": "/api/newsletter.js"
+    },
+    {
+      "source": "/api/get-signups",
+      "destination": "/api/get-signups.js"
     }
   ],
   "crons": [

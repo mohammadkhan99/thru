@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thru Waitlist - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bone-white, #EDEAE5);
+            color: var(--gunmetal, #2C2C2C);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gunmetal, #2C2C2C);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .auth-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .auth-section input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: 300px;
+            margin-right: 0.5rem;
+        }
+
+        .auth-section button {
+            padding: 0.5rem 1rem;
+            background: var(--gunmetal, #2C2C2C);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .auth-section button:hover {
+            background: #1a1a1a;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--burnt-orange, #BF4E30);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .controls {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .controls button {
+            padding: 0.5rem 1rem;
+            background: var(--gunmetal, #2C2C2C);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .controls button:hover {
+            background: #1a1a1a;
+        }
+
+        .controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #fcc;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gunmetal, #2C2C2C);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .email-cell {
+            font-weight: 500;
+            color: var(--burnt-orange, #BF4E30);
+        }
+
+        .timestamp-cell {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state p {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Thru Waitlist Admin</h1>
+            <p class="subtitle">View and manage waitlist signups</p>
+        </header>
+
+        <div id="auth-section" class="auth-section">
+            <p style="margin-bottom: 0.5rem;">Enter admin secret to view signups:</p>
+            <input type="password" id="secret-input" placeholder="Admin secret">
+            <button onclick="authenticate()">Access</button>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-count">0</div>
+                    <div class="stat-label">Total Signups</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button onclick="loadSignups()">Refresh</button>
+                <button onclick="exportCSV()">Export CSV</button>
+            </div>
+
+            <div id="error-message"></div>
+            <div id="loading" class="loading" style="display: none;">Loading signups...</div>
+
+            <table id="signups-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Email</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody id="signups-tbody">
+                </tbody>
+            </table>
+
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <p>No signups yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authSecret = null;
+
+        function authenticate() {
+            const secret = document.getElementById('secret-input').value;
+            if (!secret) {
+                alert('Please enter the admin secret');
+                return;
+            }
+            authSecret = secret;
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            loadSignups();
+        }
+
+        async function loadSignups() {
+            const loading = document.getElementById('loading');
+            const table = document.getElementById('signups-table');
+            const tbody = document.getElementById('signups-tbody');
+            const emptyState = document.getElementById('empty-state');
+            const errorMsg = document.getElementById('error-message');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            emptyState.style.display = 'none';
+            errorMsg.innerHTML = '';
+
+            try {
+                const url = `/api/get-signups?secret=${encodeURIComponent(authSecret)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load signups');
+                }
+
+                loading.style.display = 'none';
+
+                if (data.signups && data.signups.length > 0) {
+                    document.getElementById('total-count').textContent = data.count;
+                    
+                    tbody.innerHTML = '';
+                    data.signups.forEach((signup, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.count - index}</td>
+                            <td class="email-cell">${signup.email}</td>
+                            <td class="timestamp-cell">${signup.date || signup.timestamp}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    table.style.display = 'table';
+                } else {
+                    emptyState.style.display = 'block';
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                errorMsg.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                console.error('Error loading signups:', error);
+            }
+        }
+
+        function exportCSV() {
+            const rows = Array.from(document.querySelectorAll('#signups-tbody tr'));
+            if (rows.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            let csv = 'Number,Email,Date\n';
+            rows.forEach((row, index) => {
+                const cells = row.querySelectorAll('td');
+                const number = cells[0].textContent;
+                const email = cells[1].textContent;
+                const date = cells[2].textContent;
+                csv += `${number},"${email}","${date}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `thru-waitlist-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (authSecret && document.getElementById('content').style.display !== 'none') {
+                loadSignups();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

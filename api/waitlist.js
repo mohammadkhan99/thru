@@ -1,4 +1,5 @@
 const { Resend } = require('resend');
+const { kv } = require('@vercel/kv');
 
 // Initialize Resend (only if API key is provided)
 let resend = null;
@@ -97,9 +98,26 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Store email for newsletter (optional - can be done via database)
-        // For now, we'll just log it. You can add database storage here.
-        console.log(`Subscriber added to newsletter list: ${email}`);
+        // Store email in Vercel KV for the admin table
+        try {
+            const timestamp = new Date().toISOString();
+            const signupData = {
+                email: email,
+                timestamp: timestamp,
+                date: new Date().toLocaleString()
+            };
+            
+            // Add to list of signups
+            await kv.lpush('waitlist:signups', JSON.stringify(signupData));
+            
+            // Also store individual signup for easy lookup
+            await kv.set(`waitlist:email:${email}`, signupData);
+            
+            console.log(`✅ Subscriber stored in database: ${email}`);
+        } catch (kvError) {
+            // Don't fail the request if KV storage fails
+            console.error('Error storing in KV (non-fatal):', kvError);
+        }
 
         res.json({ 
             success: true, 

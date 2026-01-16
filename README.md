@@ -51,6 +51,9 @@ Set these in your Vercel project settings:
 3. **RECIPIENT_EMAIL** - Email to receive waitlist signups (defaults to `mohammad@k2studio.co` if not set)
    - For testing: `mohammad@k2studio.co`
    - For production: `joey@comethru.co`
+4. **ADMIN_SECRET** - Secret key to protect the admin signups page (optional but recommended)
+   - Set a strong password here (e.g., `your-secret-password-123`)
+   - Used to access `/admin-signups.html`
 
 ### Resend Setup (Easy - No App Passwords!)
 
@@ -82,6 +85,33 @@ Set these in your Vercel project settings:
 - Verify your domain in Resend
 - Set `FROM_EMAIL` = `noreply@comethru.co` (or your verified domain)
 - Set `RECIPIENT_EMAIL` = `joey@comethru.co`
+
+## Waitlist Storage & Admin Dashboard
+
+All waitlist signups are automatically stored in **Vercel KV** (Redis) and can be viewed in an admin dashboard.
+
+### Setup Vercel KV
+
+1. Go to your Vercel project dashboard
+2. Navigate to **Storage** → **Create Database** → **KV** (Redis)
+3. Create a new KV database (free tier available)
+4. That's it! The code will automatically use it.
+
+### View Signups
+
+1. Go to `https://your-site.vercel.app/admin-signups.html`
+2. Enter your `ADMIN_SECRET` (set in Vercel environment variables)
+3. View all signups in a table with:
+   - Email addresses
+   - Signup dates and times
+   - Total count
+   - Export to CSV functionality
+
+**Features:**
+- Real-time table of all signups
+- Auto-refreshes every 30 seconds
+- Export to CSV for spreadsheet analysis
+- Secure access with secret key
 
 ## Weekly Newsletter Setup
 
