@@ -40,7 +40,7 @@ npm run dev
 
 ## Email Configuration
 
-The waitlist form sends emails when users sign up. Currently configured to send to `mohammad@k2studio.co` for testing. Change to `joey@comethru.co` for production.
+The waitlist form sends emails when users sign up. Currently configured to send to `joey@comethru.co` for production.
 
 ### Vercel Environment Variables
 
@@ -48,7 +48,7 @@ Set these in your Vercel project settings:
 
 1. **RESEND_API_KEY** - Your Resend API key (get it from [resend.com](https://resend.com))
 2. **FROM_EMAIL** - Email address to send from (optional, defaults to Resend's test domain)
-3. **RECIPIENT_EMAIL** - Email to receive waitlist signups (defaults to `mohammad@k2studio.co` if not set)
+3. **RECIPIENT_EMAIL** - Email to receive waitlist signups (defaults to `joey@comethru.co` if not set)
    - For testing: `mohammad@k2studio.co`
    - For production: `joey@comethru.co`
 4. **ADMIN_SECRET** - Secret key to protect the admin signups page (optional but recommended)

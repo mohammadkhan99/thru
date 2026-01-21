@@ -34,18 +34,14 @@ module.exports = async (req, res) => {
         }
 
         // Send email using Resend (if configured)
-        // Currently set to test email, change to 'joey@comethru.co' for production
-        const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
-        // For testing: Use the Resend account email or verify a domain
-        // The onboarding@resend.dev domain can only send to the Resend account owner's email
+        // Production email: joey@comethru.co
+        const recipientEmail = process.env.RECIPIENT_EMAIL || 'joey@comethru.co';
         const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
         
-        // If using test domain, we need to send to the Resend account email
-        // Get it from environment or use recipientEmail if it's the account owner
-        const resendAccountEmail = process.env.RESEND_ACCOUNT_EMAIL;
-        const actualRecipient = (fromEmail.includes('resend.dev') && resendAccountEmail) 
-            ? resendAccountEmail 
-            : recipientEmail;
+        // Always use recipientEmail (joey@comethru.co)
+        // Note: If using test domain (onboarding@resend.dev), Resend may restrict sending
+        // Verify domain in Resend and set FROM_EMAIL to noreply@comethru.co for production
+        const actualRecipient = recipientEmail;
         
         if (resend) {
             try {
@@ -76,9 +72,9 @@ module.exports = async (req, res) => {
                 console.log(`✅ Email sent successfully to ${actualRecipient} for signup: ${email}`);
                 console.log(`Resend response:`, data);
                 
-                // If we had to use account email, note it in the response
-                if (actualRecipient !== recipientEmail) {
-                    console.log(`⚠️ Note: Sent to Resend account email (${actualRecipient}) instead of ${recipientEmail} because test domain restrictions. Verify a domain in Resend to send to any email.`);
+                // Warn if using test domain - may have restrictions
+                if (fromEmail.includes('resend.dev')) {
+                    console.log(`⚠️ Using test domain (onboarding@resend.dev). Verify comethru.co in Resend and set FROM_EMAIL=noreply@comethru.co for production.`);
                 }
             } catch (err) {
                 console.error('Exception sending email:', err);

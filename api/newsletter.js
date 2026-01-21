@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
 
         const emails = emailList.split(',').map(email => email.trim()).filter(Boolean);
         const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
-        const recipientEmail = process.env.RECIPIENT_EMAIL || 'mohammad@k2studio.co';
+        const recipientEmail = process.env.RECIPIENT_EMAIL || 'joey@comethru.co';
 
         // Get newsletter content from POST request or use default
         let newsletterSubject = process.env.NEWSLETTER_SUBJECT || 'Weekly Update from Thru';
