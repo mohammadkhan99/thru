@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Intelligence - thru.</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .intelligence-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-xl) var(--space-md);
+            min-height: 100vh;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--logo-grey);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: var(--space-lg);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-2xl);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--cool-gray);
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            transition: all 0.3s;
+            cursor: pointer;
+            background: var(--bone-white);
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(191, 78, 48, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(191, 78, 48, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
+        }
+
+        .upload-text {
+            font-size: 1.125rem;
+            color: var(--text-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .upload-hint {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            opacity: 0.7;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .processing-section {
+            display: none;
+            text-align: center;
+            padding: var(--space-2xl);
+        }
+
+        .processing-section.active {
+            display: block;
+        }
+
+        .processing-animation {
+            margin: var(--space-xl) 0;
+        }
+
+        .spinner-large {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--cool-gray);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--space-md);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: var(--space-sm);
+            font-weight: 500;
+        }
+
+        .processing-subtext {
+            font-size: 1rem;
+            color: var(--text-medium);
+            opacity: 0.7;
+        }
+
+        .intelligence-results {
+            display: none;
+        }
+
+        .intelligence-results.active {
+            display: block;
+        }
+
+        .results-header {
+            margin-bottom: var(--space-xl);
+        }
+
+        .results-title {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: var(--space-sm);
+        }
+
+        .results-subtitle {
+            font-size: 1rem;
+            color: var(--text-medium);
+            opacity: 0.7;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .industry-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-lg);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid var(--accent);
+        }
+
+        .industry-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: var(--space-sm);
+        }
+
+        .industry-count {
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: var(--space-md);
+        }
+
+        .investor-list {
+            list-style: none;
+        }
+
+        .investor-item {
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .investor-item:last-child {
+            border-bottom: none;
+        }
+
+        .investor-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .investor-insight {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .insights-section {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-lg);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-top: var(--space-xl);
+        }
+
+        .insights-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: var(--space-md);
+        }
+
+        .insight-item {
+            padding: var(--space-md);
+            background: var(--bone-white);
+            border-radius: 8px;
+            margin-bottom: var(--space-sm);
+            border-left: 3px solid var(--accent);
+        }
+
+        .insight-text {
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="intelligence-container">
+        <a href="index.html" class="back-link">
+            ← Back to home
+        </a>
+
+        <div class="upload-section" id="upload-section">
+            <h1 style="font-size: 2rem; margin-bottom: var(--space-md); color: var(--text-dark);">Investor Intelligence</h1>
+            <p style="margin-bottom: var(--space-xl); color: var(--text-medium); opacity: 0.8;">
+                Upload your investor CSV to discover insights, industry mapping, and activation opportunities
+            </p>
+            
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📊</div>
+                <div class="upload-text">Drop your CSV file here</div>
+                <div class="upload-hint">or click to browse</div>
+                <input type="file" id="file-input" accept=".csv" />
+            </div>
+        </div>
+
+        <div class="processing-section" id="processing-section">
+            <div class="processing-animation">
+                <div class="spinner-large"></div>
+                <div class="processing-text" id="processing-text">Finding intelligence on your investors...</div>
+                <div class="processing-subtext" id="processing-subtext">Analyzing data and mapping connections</div>
+            </div>
+        </div>
+
+        <div class="intelligence-results" id="results-section">
+            <div class="results-header">
+                <h2 class="results-title">Your Investor Intelligence</h2>
+                <p class="results-subtitle">Mapped by industry with key insights</p>
+            </div>
+
+            <div class="industry-grid" id="industry-grid">
+                <!-- Industry cards will be inserted here -->
+            </div>
+
+            <div class="insights-section">
+                <h3 class="insights-title">Key Insights</h3>
+                <div id="insights-list">
+                    <!-- Insights will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadSection = document.getElementById('upload-section');
+        const processingSection = document.getElementById('processing-section');
+        const resultsSection = document.getElementById('results-section');
+        const processingText = document.getElementById('processing-text');
+        const processingSubtext = document.getElementById('processing-subtext');
+
+        // File upload handlers
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                processFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                processFile(e.target.files[0]);
+            }
+        });
+
+        function processFile(file) {
+            // Hide upload, show processing
+            uploadSection.style.display = 'none';
+            processingSection.classList.add('active');
+
+            // Read CSV file
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const csv = e.target.result;
+                const investors = parseCSV(csv);
+                
+                // Simulate intelligence gathering with animations
+                simulateIntelligenceGathering(investors);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const investors = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                const investor = {};
+                headers.forEach((header, index) => {
+                    investor[header] = values[index] || '';
+                });
+                if (investor.name || investor['first name'] || investor['full name']) {
+                    investors.push(investor);
+                }
+            }
+
+            return investors;
+        }
+
+        function simulateIntelligenceGathering(investors) {
+            const steps = [
+                { text: 'Finding intelligence on your investors...', subtext: 'Analyzing data and mapping connections' },
+                { text: 'Mapping industry connections...', subtext: 'Identifying sectors and expertise areas' },
+                { text: 'Discovering insights...', subtext: 'Finding activation opportunities' },
+                { text: 'Finalizing intelligence report...', subtext: 'Almost ready...' }
+            ];
+
+            let stepIndex = 0;
+            const interval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    processingText.textContent = steps[stepIndex].text;
+                    processingSubtext.textContent = steps[stepIndex].subtext;
+                    stepIndex++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        displayResults(investors);
+                    }, 1000);
+                }
+            }, 2000);
+        }
+
+        function displayResults(investors) {
+            processingSection.classList.remove('active');
+            resultsSection.classList.add('active');
+            resultsSection.classList.add('fade-in');
+
+            // Generate mock intelligence data
+            const intelligence = generateIntelligence(investors);
+            
+            // Display industry mapping
+            displayIndustryMapping(intelligence.industries);
+            
+            // Display insights
+            displayInsights(intelligence.insights);
+        }
+
+        function generateIntelligence(investors) {
+            // Mock industry mapping - in production, this would call an API
+            const industries = {
+                'SaaS & Enterprise': [],
+                'Fintech': [],
+                'Healthcare': [],
+                'Consumer': [],
+                'AI & Machine Learning': [],
+                'Other': []
+            };
+
+            const industryKeywords = {
+                'SaaS & Enterprise': ['saas', 'enterprise', 'b2b', 'software', 'platform'],
+                'Fintech': ['fintech', 'finance', 'banking', 'payments', 'crypto'],
+                'Healthcare': ['health', 'medical', 'biotech', 'pharma', 'wellness'],
+                'Consumer': ['consumer', 'retail', 'ecommerce', 'marketplace'],
+                'AI & Machine Learning': ['ai', 'ml', 'machine learning', 'artificial intelligence', 'data']
+            };
+
+            investors.forEach((investor, index) => {
+                const name = investor.name || investor['full name'] || 
+                           `${investor['first name'] || ''} ${investor['last name'] || ''}`.trim() || 
+                           `Investor ${index + 1}`;
+                
+                const company = investor.company || investor['company name'] || 'Unknown Company';
+                const title = investor.title || investor['job title'] || 'Investor';
+                
+                let assigned = false;
+                for (const [industry, keywords] of Object.entries(industryKeywords)) {
+                    const searchText = `${company} ${title}`.toLowerCase();
+                    if (keywords.some(keyword => searchText.includes(keyword))) {
+                        industries[industry].push({
+                            name,
+                            company,
+                            title,
+                            insight: generateInsight(industry, company)
+                        });
+                        assigned = true;
+                        break;
+                    }
+                }
+                
+                if (!assigned) {
+                    industries['Other'].push({
+                        name,
+                        company,
+                        title,
+                        insight: `Active in ${company}`
+                    });
+                }
+            });
+
+            // Generate insights
+            const insights = [
+                `Found ${investors.length} investors across ${Object.keys(industries).filter(k => industries[k].length > 0).length} industries`,
+                `Strongest representation in ${Object.entries(industries).sort((a, b) => b[1].length - a[1].length)[0][0]}`,
+                `Multiple investors have expertise in enterprise software and B2B solutions`,
+                `Consider grouping investors by industry for targeted updates`
+            ];
+
+            return { industries, insights };
+        }
+
+        function generateInsight(industry, company) {
+            const insights = {
+                'SaaS & Enterprise': [
+                    `Expertise in enterprise software and B2B solutions`,
+                    `Strong network in SaaS and platform businesses`,
+                    `Experience scaling B2B companies`
+                ],
+                'Fintech': [
+                    `Deep knowledge of financial services and payments`,
+                    `Network includes fintech founders and operators`,
+                    `Experience with regulatory and compliance challenges`
+                ],
+                'Healthcare': [
+                    `Healthcare and biotech industry expertise`,
+                    `Connections in medical and pharma sectors`,
+                    `Understanding of healthcare regulations`
+                ],
+                'Consumer': [
+                    `Consumer product and retail experience`,
+                    `Network in ecommerce and marketplaces`,
+                    `Experience with consumer brand building`
+                ],
+                'AI & Machine Learning': [
+                    `AI and machine learning expertise`,
+                    `Network in data science and AI companies`,
+                    `Understanding of AI product development`
+                ]
+            };
+
+            const industryInsights = insights[industry] || [`Active in ${industry}`];
+            return industryInsights[Math.floor(Math.random() * industryInsights.length)];
+        }
+
+        function displayIndustryMapping(industries) {
+            const grid = document.getElementById('industry-grid');
+            grid.innerHTML = '';
+
+            Object.entries(industries).forEach(([industry, investors]) => {
+                if (investors.length === 0) return;
+
+                const card = document.createElement('div');
+                card.className = 'industry-card fade-in';
+                card.innerHTML = `
+                    <div class="industry-name">${industry}</div>
+                    <div class="industry-count">${investors.length} investor${investors.length > 1 ? 's' : ''}</div>
+                    <ul class="investor-list">
+                        ${investors.map(inv => `
+                            <li class="investor-item">
+                                <div class="investor-name">${inv.name}</div>
+                                <div class="investor-insight">${inv.insight}</div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function displayInsights(insights) {
+            const list = document.getElementById('insights-list');
+            list.innerHTML = '';
+
+            insights.forEach((insight, index) => {
+                const item = document.createElement('div');
+                item.className = 'insight-item fade-in';
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.innerHTML = `<div class="insight-text">${insight}</div>`;
+                list.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>
